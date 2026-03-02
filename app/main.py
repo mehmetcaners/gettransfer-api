@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes.health import router as health_router
 from app.routes.transfers import router as transfers_router
 from app.routes.places import router as places_router
+from app.routes.bookings import router as bookings_router
+from app.routes.routes_api import router as routes_router
 
 app = FastAPI(title="GetTransfer API")
 
@@ -18,3 +20,5 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(transfers_router)
 app.include_router(places_router)
+app.include_router(bookings_router)
+app.include_router(routes_router)

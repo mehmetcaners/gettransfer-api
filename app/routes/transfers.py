@@ -19,7 +19,6 @@ async def search_transfers_endpoint(
     session: Annotated[AsyncSession | Session, Depends(get_session)],
     currency: Annotated[Optional[str], Query(description="Currency code filter")] = None,
     roundtrip: Annotated[bool, Query(description="Roundtrip flag")] = False,
-    category_id: Annotated[Optional[int], Query(description="Optional category filter")] = None,
 ) -> TransferSearchResponse:
     return await search_transfers(
         session,
@@ -28,5 +27,4 @@ async def search_transfers_endpoint(
         pax=pax,
         currency=currency,
         roundtrip=roundtrip,
-        category_id=category_id,
     )

@@ -16,7 +16,6 @@ class TransferResult(BaseModel):
     price_one_way: Decimal
     price_total: Decimal
     route_url: Optional[str] = None
-    category_id: int
 
 
 class TransferSearchResponse(BaseModel):
@@ -26,3 +25,7 @@ class TransferSearchResponse(BaseModel):
     roundtrip: bool
     matched_direction: Literal["forward", "reverse"]
     results: list[TransferResult]
+    distance_meters: Optional[int] = None
+    distance_km: Optional[Decimal] = None
+    duration_seconds: Optional[int] = None
+    route_url: Optional[str] = None
