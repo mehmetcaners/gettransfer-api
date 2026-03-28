@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.db.session import init_db
 from app.routes.health import router as health_router
 from app.routes.transfers import router as transfers_router
 from app.routes.places import router as places_router
 from app.routes.bookings import router as bookings_router
 from app.routes.routes_api import router as routes_router
+from app.routes.admin import router as admin_router
 
 app = FastAPI(title="GetTransfer API")
 
@@ -22,3 +24,9 @@ app.include_router(transfers_router)
 app.include_router(places_router)
 app.include_router(bookings_router)
 app.include_router(routes_router)
+app.include_router(admin_router)
+
+
+@app.on_event("startup")
+async def startup_event() -> None:
+    await init_db()

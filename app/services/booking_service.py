@@ -19,6 +19,7 @@ from app.schemas.booking import BookingCreate
 from app.services.pdf_service import generate_voucher_pdf
 from app.services.transfer_search import compute_vehicle_dynamic_price
 from app.services.token_service import generate_token, verify_token
+from app.services.whatsapp_service import send_booking_confirmation_whatsapp
 
 TWOPLACES = Decimal("0.01")
 PNR_PREFIX = "GT-"
@@ -242,6 +243,7 @@ async def confirm_booking(session: AsyncSession | Session, booking_id: uuid.UUID
 
         await anyio.to_thread.run_sync(_run)
 
+    await send_booking_confirmation_whatsapp(booking)
     return booking
 
 
