@@ -24,6 +24,10 @@ def _distance_km(distance_meters: int) -> Decimal:
     return Decimal(distance_meters) / KM_DIVISOR
 
 
+def _vehicle_price_delta(vehicle: VehicleType) -> Decimal:
+    return _quantize_money(Decimal(vehicle.price_delta or 0))
+
+
 async def _run_scalars(
     session: AsyncSession | Session, stmt
 ) -> list[Any]:
@@ -152,7 +156,8 @@ async def compute_vehicle_dynamic_price(
             detail="Vehicle does not support the requested passenger count",
         )
 
-    price_one_way = _quantize_money(Decimal(tier.price))
+    vehicle_delta = _vehicle_price_delta(vehicle)
+    price_one_way = _quantize_money(Decimal(tier.price) + vehicle_delta)
     multiplier = Decimal(2) if roundtrip else Decimal(1)
     price_total = _quantize_money(price_one_way * multiplier)
 
@@ -202,7 +207,8 @@ async def search_transfers(
     multiplier = Decimal(2) if roundtrip else Decimal(1)
 
     for vehicle in vehicle_types:
-        price_one_way = _quantize_money(Decimal(tier.price))
+        vehicle_delta = _vehicle_price_delta(vehicle)
+        price_one_way = _quantize_money(Decimal(tier.price) + vehicle_delta)
         price_total = _quantize_money(price_one_way * multiplier)
 
         results.append(
