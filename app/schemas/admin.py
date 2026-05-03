@@ -146,3 +146,34 @@ class AdminDashboardResponse(BaseModel):
     stats: AdminDashboardStats
     revenue: list[AdminRevenueWindow]
     recent_bookings: list[AdminBookingListItem]
+
+
+class AdminDistancePriceTierRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    min_km: Decimal
+    max_km: Decimal
+    price: Decimal
+    currency: str
+    is_active: bool
+
+
+class AdminDistancePriceTierListResponse(BaseModel):
+    items: list[AdminDistancePriceTierRead]
+
+
+class AdminDistancePriceTierCreate(BaseModel):
+    min_km: Decimal
+    max_km: Decimal
+    price: Decimal
+    currency: str = Field(..., min_length=1, max_length=8)
+    is_active: bool = True
+
+
+class AdminDistancePriceTierUpdate(BaseModel):
+    min_km: Decimal | None = None
+    max_km: Decimal | None = None
+    price: Decimal | None = None
+    currency: str | None = Field(default=None, min_length=1, max_length=8)
+    is_active: bool | None = None

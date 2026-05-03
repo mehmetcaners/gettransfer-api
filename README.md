@@ -46,6 +46,9 @@ uvicorn app.main:app --reload
 - `GET /api/admin/bookings`
 - `GET /api/admin/bookings/{booking_id}`
 - `PATCH /api/admin/bookings/{booking_id}`
+- `GET /api/admin/pricing/distance-tiers`
+- `POST /api/admin/pricing/distance-tiers`
+- `PATCH /api/admin/pricing/distance-tiers/{tier_id}`
 
 ## Booking flow
 1. Create booking with passenger + route details via `POST /api/bookings`.

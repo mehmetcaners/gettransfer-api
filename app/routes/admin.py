@@ -18,6 +18,10 @@ from app.schemas.admin import (
     AdminBookingUpdate,
     AdminDashboardResponse,
     AdminDashboardStats,
+    AdminDistancePriceTierCreate,
+    AdminDistancePriceTierListResponse,
+    AdminDistancePriceTierRead,
+    AdminDistancePriceTierUpdate,
     AdminRevenueWindow,
     AdminLoginRequest,
     AdminLoginResponse,
@@ -38,6 +42,11 @@ from app.services.admin_booking_service import (
     get_dashboard_snapshot,
     list_bookings,
     update_booking,
+)
+from app.services.admin_pricing_service import (
+    create_distance_price_tier,
+    list_distance_price_tiers,
+    update_distance_price_tier,
 )
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -173,3 +182,50 @@ async def admin_update_booking(
         note=payload.note if "note" in payload.model_fields_set else UNSET,
     )
     return _serialise_booking_detail(booking)
+
+
+@router.get("/pricing/distance-tiers", response_model=AdminDistancePriceTierListResponse)
+async def admin_list_distance_price_tiers(
+    _current_admin: Annotated[AdminUser, Depends(get_current_admin)],
+    session: Annotated[AsyncSession | Session, Depends(get_session)],
+) -> AdminDistancePriceTierListResponse:
+    items = await list_distance_price_tiers(session)
+    return AdminDistancePriceTierListResponse(
+        items=[AdminDistancePriceTierRead.model_validate(item, from_attributes=True) for item in items]
+    )
+
+
+@router.post("/pricing/distance-tiers", response_model=AdminDistancePriceTierRead, status_code=status.HTTP_201_CREATED)
+async def admin_create_distance_price_tier(
+    payload: AdminDistancePriceTierCreate,
+    _current_admin: Annotated[AdminUser, Depends(get_current_admin)],
+    session: Annotated[AsyncSession | Session, Depends(get_session)],
+) -> AdminDistancePriceTierRead:
+    tier = await create_distance_price_tier(
+        session,
+        min_km=payload.min_km,
+        max_km=payload.max_km,
+        price=payload.price,
+        currency=payload.currency,
+        is_active=payload.is_active,
+    )
+    return AdminDistancePriceTierRead.model_validate(tier, from_attributes=True)
+
+
+@router.patch("/pricing/distance-tiers/{tier_id}", response_model=AdminDistancePriceTierRead)
+async def admin_update_distance_price_tier(
+    tier_id: int,
+    payload: AdminDistancePriceTierUpdate,
+    _current_admin: Annotated[AdminUser, Depends(get_current_admin)],
+    session: Annotated[AsyncSession | Session, Depends(get_session)],
+) -> AdminDistancePriceTierRead:
+    tier = await update_distance_price_tier(
+        session,
+        tier_id,
+        min_km=payload.min_km,
+        max_km=payload.max_km,
+        price=payload.price,
+        currency=payload.currency,
+        is_active=payload.is_active,
+    )
+    return AdminDistancePriceTierRead.model_validate(tier, from_attributes=True)
